@@ -1,0 +1,18 @@
+{
+  "hooks\\useCards.ts -> @/lib/api/community": {
+    "id": "hooks\\useCards.ts -> @/lib/api/community",
+    "files": [
+      "static/chunks/_app-pages-browser_src_lib_api_community_ts.js"
+    ]
+  },
+  "hooks\\useProfile.ts -> @/lib/api/folders": {
+    "id": "hooks\\useProfile.ts -> @/lib/api/folders",
+    "files": [
+      "static/chunks/_app-pages-browser_src_lib_api_folders_ts.js"
+    ]
+  },
+  "lib\\api\\profiles.ts -> @/lib/supabase/client": {
+    "id": "lib\\api\\profiles.ts -> @/lib/supabase/client",
+    "files": []
+  }
+}

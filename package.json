@@ -1,0 +1,15 @@
+{
+  "name": "promptvault",
+  "private": true,
+  "version": "1.0.0",
+  "description": "PromptVault monorepo — apps/api (backend), apps/web (Next.js), apps/mobile (Expo), packages/shared-types",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=apps/api",
+    "build:api": "npm run build --workspace=apps/api",
+    "start:api": "npm run start --workspace=apps/api"
+  }
+}

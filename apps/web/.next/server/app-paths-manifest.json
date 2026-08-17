@@ -1,0 +1,6 @@
+{
+  "/page": "app/page.js",
+  "/community/page": "app/community/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/app/page": "app/app/page.js"
+}

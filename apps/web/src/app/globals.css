@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* PromptVault "paper & ink" light theme */
+    --background: 250 247 241; /* warm paper */
+    --foreground: 28 25 23; /* ink */
+    --card: 255 255 255;
+    --card-foreground: 28 25 23;
+    --popover: 255 255 255;
+    --popover-foreground: 28 25 23;
+    --muted: 240 235 226;
+    --muted-foreground: 120 111 100;
+    --border: 228 219 206;
+    --input: 214 204 189;
+    --ring: 228 87 46;
+    --primary: 228 87 46; /* ember vermilion */
+    --primary-foreground: 255 250 245;
+    --secondary: 46 43 38;
+    --secondary-foreground: 250 247 241;
+    --accent: 38 77 71; /* deep pine */
+    --accent-foreground: 240 250 247;
+    --destructive: 190 46 46;
+    --success: 34 118 86;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 22 19 15; /* deep ink */
+    --foreground: 245 241 232;
+    --card: 30 26 21;
+    --card-foreground: 245 241 232;
+    --popover: 30 26 21;
+    --popover-foreground: 245 241 232;
+    --muted: 44 39 33;
+    --muted-foreground: 172 161 146;
+    --border: 56 49 41;
+    --input: 66 58 49;
+    --ring: 255 107 61;
+    --primary: 255 107 61;
+    --primary-foreground: 26 16 10;
+    --secondary: 245 241 232;
+    --secondary-foreground: 22 19 15;
+    --accent: 94 156 146;
+    --accent-foreground: 15 24 22;
+    --destructive: 224 74 74;
+    --success: 74 176 138;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "ss01", "ss02";
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Subtle paper-grain texture for atmospheric depth */
+  .grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

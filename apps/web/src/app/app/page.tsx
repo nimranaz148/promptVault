@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useCards, useDeleteCard, useDuplicateCard } from "@/hooks/useCards";
 import { useSearchParams, useRouter } from "next/navigation";
 import { DeleteConfirmModal } from "@/components/DeleteConfirmModal";
+import { toast } from "sonner";
 
 import { PromptCardSkeleton } from "@/components/PromptCardSkeleton";
 import { EmptyState } from "@/components/EmptyState";
@@ -24,10 +25,12 @@ export default function DashboardPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeType = searchParams.get("type") || "";
+  const activeFolder = searchParams.get("folder") || undefined;
 
-  const { data: response, isLoading, error } = useCards(
-    activeType ? { type: activeType } : {}
-  );
+  const { data: response, isLoading, error } = useCards({
+    ...(activeType ? { type: activeType } : {}),
+    ...(activeFolder ? { folder_id: activeFolder } : {}),
+  });
   const cards = response?.data || [];
 
   const deleteMutation = useDeleteCard();
@@ -46,8 +49,10 @@ export default function DashboardPage() {
     if (deleteCardId) {
       try {
         await deleteMutation.mutateAsync(deleteCardId);
+        toast.success("Prompt card deleted");
       } catch (err) {
         console.error("Failed to delete card:", err);
+        toast.error("Failed to delete prompt card. It might be referenced elsewhere.");
       } finally {
         setDeleteCardId(null);
       }

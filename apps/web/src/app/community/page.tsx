@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { Search, Bell, Settings, Plus } from "lucide-react";
@@ -214,6 +214,8 @@ export default function CommunityFeedPage() {
                     likes={card.like_count || 0}
                     runs={0}
                     isRunInApp={card.mode === "run_in_app"}
+                    creatorUsername={card.owner?.username}
+                    creatorAvatarUrl={card.owner?.avatar_url}
                   />
                 </Link>
               ))}

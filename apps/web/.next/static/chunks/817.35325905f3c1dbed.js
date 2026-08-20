@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[817],{1817:function(e,t,r){r.r(t),r.d(t,{foldersApi:function(){return c}});var s=r(419);let c={list:()=>s.hi.get("/folders"),create:e=>s.hi.post("/folders",{name:e}),update:(e,t)=>s.hi.patch("/folders/".concat(e),{name:t}),remove:e=>s.hi.delete("/folders/".concat(e))}}}]);

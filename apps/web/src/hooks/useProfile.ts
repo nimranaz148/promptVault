@@ -3,11 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { profilesApi, type UpdateProfileInput } from "@/lib/api/profiles";
 
-export function useMe() {
+export function useMe(enabled: boolean = true) {
   return useQuery({
     queryKey: ["me"],
     queryFn: () => profilesApi.me(),
     retry: false,
+    enabled,
   });
 }
 

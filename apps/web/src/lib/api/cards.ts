@@ -18,6 +18,7 @@ export interface ListCardsParams {
   page?: number;
   limit?: number;
   folder_id?: string;
+  username?: string;
 }
 
 function toQuery(params: ListCardsParams): string {

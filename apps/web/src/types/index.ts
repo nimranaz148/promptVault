@@ -85,6 +85,10 @@ export interface PromptCard {
   folder_id?: string | null;
   created_at: string;
   updated_at: string;
+  owner?: {
+    username: string;
+    avatar_url: string | null;
+  };
 }
 
 export interface CardRun {

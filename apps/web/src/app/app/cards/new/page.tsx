@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -11,14 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCreateCard } from "@/hooks/useCards";
+import { useFolders } from "@/hooks/useFolders";
 
 export default function CreatePromptPage() {
   const router = useRouter();
   const createMutation = useCreateCard();
+  const { folders } = useFolders();
 
   const [type, setType] = useState<"image" | "video" | "text">("image");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Thumbnail Generator");
+  const [folderId, setFolderId] = useState<string>("");
   const [promptBody, setPromptBody] = useState("");
   const [tags, setTags] = useState<string[]>(["ART", "ENVIRONMENT"]);
   const [tagInput, setTagInput] = useState("");
@@ -54,6 +57,7 @@ export default function CreatePromptPage() {
         tags,
         mode: runInApp ? "run_in_app" : "save_only",
         is_public: isPublic,
+        folder_id: folderId || undefined,
       });
       router.push(`/app/cards/${newCard.id}`);
     } catch (err) {
@@ -130,7 +134,7 @@ export default function CreatePromptPage() {
           </div>
 
           <Card className="p-8 space-y-8 bg-card shadow-sm border-border/60">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Prompt Title</Label>
                 <Input 
@@ -154,6 +158,20 @@ export default function CreatePromptPage() {
                   <option value="blog_post">Blog Post Writing</option>
                   <option value="code_explain">Code Generation / Explain Code</option>
                   <option value="text_to_video_script">Text-to-Video Script</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="folder" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Folder</Label>
+                <select 
+                  id="folder" 
+                  value={folderId}
+                  onChange={(e) => setFolderId(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                >
+                  <option value="">(No Folder)</option>
+                  {folders?.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
                 </select>
               </div>
             </div>

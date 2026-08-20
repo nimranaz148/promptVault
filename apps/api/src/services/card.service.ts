@@ -1,4 +1,4 @@
-﻿import { AppError } from '../utils/AppError';
+import { AppError } from '../utils/AppError';
 import {
   listCards,
   findCardById,
@@ -8,7 +8,7 @@ import {
   setPublicStatus,
   ListCardsFilters,
 } from '../models/card.model';
-import { PromptCard } from '../types';
+import { PromptCard, PromptVariable } from '../types';
 import { assertFolderOwnership } from './folder.service';
 
 /** Throws if `userId` does not own `card`. Central ownership check used
@@ -18,6 +18,15 @@ function assertOwnership(card: PromptCard, userId: string) {
   if (card.owner_id !== userId) {
     throw AppError.forbidden('You do not own this card');
   }
+}
+
+/** Extracts template variables (e.g. {{subject}}) from the prompt body */
+function extractVariables(promptBody: string): PromptVariable[] {
+  const regex = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
+  const matches = [...promptBody.matchAll(regex)];
+  // Use Set to get unique keys
+  const keys = Array.from(new Set(matches.map(m => m[1])));
+  return keys.map(key => ({ key, label: key }));
 }
 
 export async function getMyCards(userId: string, filters: Omit<ListCardsFilters, 'ownerId'>) {
@@ -36,6 +45,11 @@ export async function createNewCard(
   input: Omit<PromptCard, 'id' | 'owner_id' | 'like_count' | 'forked_from' | 'created_at' | 'updated_at'>
 ): Promise<PromptCard> {
   await assertFolderOwnership(input.folder_id, userId);
+  
+  if (input.prompt_body) {
+    input.variables = extractVariables(input.prompt_body);
+  }
+  
   return createCard(userId, input);
 }
 
@@ -46,6 +60,11 @@ export async function updateOwnedCard(
 ): Promise<PromptCard> {
   await getCardForOwner(id, userId); // throws if not found/not owner
   await assertFolderOwnership(updates.folder_id, userId);
+  
+  if (updates.prompt_body !== undefined) {
+    updates.variables = extractVariables(updates.prompt_body);
+  }
+  
   return updateCard(id, updates);
 }
 

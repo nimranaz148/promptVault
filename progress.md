@@ -1,4 +1,4 @@
-﻿# PromptVault Progress
+# PromptVault Progress
 
 Updated: 2026-08-17
 
@@ -41,6 +41,12 @@ Implemented web routes:
 
 Known web follow-ups:
 
+- Fixing Mocked Profile Card Feed (fetching specific user's cards) [COMPLETED]
+- Implementing Modals for 'Save to Library' and Logout confirmation [COMPLETED]
+- Fixing Card deletion failing silently due to Foreign Key violations [COMPLETED]
+- Fixing Broken Creator Profile Links (routing to username instead of owner_id) [COMPLETED]
+- Fixing Next.js Pre-render Compile Blocker (supabase client fallback) [COMPLETED]
+- Implementing Folders UI (Sidebar, Dropdowns, Listing filtering) [COMPLETED]
 - `npm run lint --workspace=apps/web` passes, but reports warnings for raw `<img>` usage. These are performance warnings, not build blockers.
 - Remote image handling can be migrated to `next/image` once image domains and dimensions are finalized.
 
@@ -62,6 +68,7 @@ Completed:
 
 Known backend follow-ups:
 
+- Implementing Owner Joined Profiles on Cards (fetching profile info with cards) [COMPLETED]
 - Live AI-provider tests remain manual because automated tests mock provider boundaries.
 - Operational deployment still needs production env vars, VPS setup, PM2/Nginx/Certbot, and Vercel configuration.
 

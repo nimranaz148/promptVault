@@ -11,6 +11,7 @@ export const communityApi = {
     if (params.category) q.set("category", params.category);
     if (params.tag) q.set("tag", params.tag);
     if (params.search) q.set("search", params.search);
+    if (params.username) q.set("username", params.username);
     if (params.page) q.set("page", String(params.page));
     if (params.limit) q.set("limit", String(params.limit));
     const s = q.toString();

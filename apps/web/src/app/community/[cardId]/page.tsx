@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Modal } from "@/components/ui/modal";
 import { useRouter } from "next/navigation";
 import { useCommunityCard, useLikeCard, useUnlikeCard } from "@/hooks/useCommunity";
 import { useSaveToLibrary } from "@/hooks/useCards";
@@ -34,10 +36,12 @@ export default function CommunityCardDetailPage({ params }: { params: { cardId: 
     await likeMutation.mutateAsync(card.id);
   };
 
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
   const handleSaveToLibrary = async () => {
     if (!card || !requireLogin()) return;
     await saveMutation.mutateAsync(card.id);
-    alert("Saved to your library!");
+    setShowSaveModal(true);
   };
 
   if (isLoading) {
@@ -95,12 +99,12 @@ export default function CommunityCardDetailPage({ params }: { params: { cardId: 
                   <ArrowLeft className="w-5 h-5" />
                 </Link>
               </Button>
-              <Link href={`/profile/${card.owner_id}`} className="flex items-center space-x-3 group">
+              <Link href={`/profile/${card.owner?.username || card.owner_id}`} className="flex items-center space-x-3 group">
                 <div className="w-10 h-10 rounded-full overflow-hidden border border-border/50 bg-muted">
-                  <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${card.owner_id}`} alt="Creator" />
+                  <img src={card.owner?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${card.owner?.username || card.owner_id}`} alt="Creator" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground group-hover:underline">Creator Profile</p>
+                  <p className="text-sm font-semibold text-foreground group-hover:underline">@{card.owner?.username || "Unknown"}</p>
                   <p className="text-xs text-muted-foreground">Published recently</p>
                 </div>
               </Link>
@@ -163,6 +167,28 @@ export default function CommunityCardDetailPage({ params }: { params: { cardId: 
           </Card>
         </div>
       </main>
+
+      <Modal 
+        isOpen={showSaveModal} 
+        onClose={() => setShowSaveModal(false)}
+        title="Saved to Library"
+        description="This prompt has been successfully cloned to your personal library."
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setShowSaveModal(false)}>
+              Close
+            </Button>
+            <Button onClick={() => router.push("/app")}>
+              View My Library
+            </Button>
+          </>
+        }
+      >
+        <div className="flex items-center gap-3 p-4 bg-primary/10 text-primary rounded-lg">
+          <Bookmark className="w-5 h-5 shrink-0" />
+          <span className="text-sm">You can now edit variables and run this prompt in your own workspace.</span>
+        </div>
+      </Modal>
     </div>
   );
 }

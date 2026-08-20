@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
 
 // Matches PRD Section 8 field validation rules exactly.
@@ -44,6 +44,7 @@ export const listCardsQuerySchema = z.object({
     category: z.string().trim().min(1).max(50).optional(),
     tag: z.string().optional(),
     search: z.string().optional(),
+    username: z.string().optional(),
     page: z.coerce.number().int().min(1).optional().default(1),
     limit: z.coerce.number().int().min(1).max(100).optional().default(20),
     folder_id: z.string().uuid().optional(),

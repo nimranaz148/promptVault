@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCard, useUpdateCard } from "@/hooks/useCards";
+import { useFolders } from "@/hooks/useFolders";
 
 export default function EditPromptPage() {
   const params = useParams();
@@ -18,12 +19,13 @@ export default function EditPromptPage() {
   const cardId = params.id as string;
 
   const { data: card, isLoading, isError } = useCard(cardId);
-
   const updateMutation = useUpdateCard(cardId);
+  const { folders } = useFolders();
 
   const [type, setType] = useState<"image" | "video" | "text">("image");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("text_to_image");
+  const [folderId, setFolderId] = useState<string>("");
   const [promptBody, setPromptBody] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -35,6 +37,7 @@ export default function EditPromptPage() {
       setType(card.type || "image");
       setTitle(card.title || "");
       setCategory(card.category || "text_to_image");
+      setFolderId(card.folder_id || "");
       setPromptBody(card.prompt_body || "");
       setTags(card.tags || []);
       setRunInApp(card.mode === "run_in_app");
@@ -72,6 +75,7 @@ export default function EditPromptPage() {
         tags,
         mode: runInApp ? "run_in_app" : "save_only",
         is_public: isPublic,
+        folder_id: folderId || null,
       });
       router.push(`/app/cards/${cardId}`);
     } catch (err) {
@@ -171,7 +175,7 @@ export default function EditPromptPage() {
           </div>
 
           <Card className="p-8 space-y-8 bg-card shadow-sm border-border/60">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="title" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Prompt Title</Label>
                 <Input
@@ -203,6 +207,20 @@ export default function EditPromptPage() {
                   <option value="ad_copy">Ad/Marketing Copy</option>
                   <option value="code_explain">Code Generation / Explain Code</option>
                   <option value="seo_content">SEO Content Writing</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="folder" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Folder</Label>
+                <select 
+                  id="folder" 
+                  value={folderId}
+                  onChange={(e) => setFolderId(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                >
+                  <option value="">(No Folder)</option>
+                  {folders?.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
                 </select>
               </div>
             </div>

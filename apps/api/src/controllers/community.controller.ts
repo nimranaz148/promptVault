@@ -3,12 +3,13 @@ import * as communityService from '../services/community.service';
 
 export async function listCommunityCards(req: Request, res: Response, next: NextFunction) {
   try {
-    const { type, category, tag, search, page, limit } = req.query as Record<string, string>;
+    const { type, category, tag, search, page, limit, username } = req.query as Record<string, string>;
     const result = await communityService.getCommunityFeed({
       type,
       category,
       tag,
       search,
+      username,
       page: Number(page) || 1,
       limit: Number(limit) || 20,
     });

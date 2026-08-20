@@ -12,10 +12,8 @@ import { useCommunityFeed } from "@/hooks/useCommunity";
 export default function PublicProfilePage({ params }: { params: { username: string } }) {
   const { data: profile, isLoading: profileLoading } = useProfileByUsername(params.username);
 
-  // Assuming useCommunityFeed can filter by owner username if supported by the backend.
-  // The PRD doesn't explicitly state the param, but we'll fetch general community feed 
-  // for now and in a real app this would pass `{ username: params.username }` to the API.
-  const { data: cardsData, isLoading: cardsLoading } = useCommunityFeed();
+  // We fetch the community feed filtered by this profile's username
+  const { data: cardsData, isLoading: cardsLoading } = useCommunityFeed({ username: params.username });
   const cards = cardsData?.data || [];
 
   if (profileLoading) {
@@ -124,8 +122,7 @@ export default function PublicProfilePage({ params }: { params: { username: stri
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
-              {/* Note: in reality, filter by card.owner_id === profile.id */}
-              {cards.slice(0, 6).map((card: any) => (
+              {cards.map((card: any) => (
                 <Link key={card.id} href={`/community/${card.id}`} className="block hover:no-underline">
                   <PromptCard 
                     type={card.type as CardType}

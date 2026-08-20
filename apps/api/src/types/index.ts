@@ -1,4 +1,4 @@
-﻿// Shared types - mirrors PRD Section 8 (Database Schema) and Section 3.6 (Categories)
+// Shared types - mirrors PRD Section 8 (Database Schema) and Section 3.6 (Categories)
 
 export type CardType = 'image' | 'video' | 'text';
 
@@ -65,6 +65,10 @@ export interface PromptCard {
   folder_id?: string | null;
   created_at: string;
   updated_at: string;
+  owner?: {
+    username: string;
+    avatar_url: string | null;
+  };
 }
 
 export interface CardRun {

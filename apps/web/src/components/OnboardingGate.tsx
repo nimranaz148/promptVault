@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { User, AtSign, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import { ApiError } from "@/lib/api/client";
 export function OnboardingGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { data: profile, isLoading: profileLoading, error } = useMe();
+  const { data: profile, isLoading: profileLoading, error } = useMe(!!user);
 
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -28,9 +29,10 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     }
   }, [authLoading, user, router]);
 
-  const needsOnboarding =
-    !profileLoading &&
-    (!profile || !!error);
+  const isNotFound = error instanceof ApiError && error.status === 404;
+  const needsOnboarding = !profileLoading && isNotFound;
+
+  const qc = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +47,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     setSubmitting(true);
     try {
       await profilesApi.completeOnboarding(clean, displayName.trim() || clean);
+      await qc.invalidateQueries({ queryKey: ["me"] });
       router.replace("/app");
     } catch (err) {
       setFormError(
@@ -58,6 +61,14 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error && !isNotFound) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-8 text-destructive">
+        Failed to load profile data. Please try refreshing the page.
       </div>
     );
   }

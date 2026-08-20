@@ -1,0 +1,1 @@
+"use strict";exports.id=158,exports.ids=[158],exports.modules={6158:(e,s,r)=>{r.r(s),r.d(s,{foldersApi:()=>d});var t=r(3484);let d={list:()=>t.hi.get("/folders"),create:e=>t.hi.post("/folders",{name:e}),update:(e,s)=>t.hi.patch(`/folders/${e}`,{name:s}),remove:e=>t.hi.delete(`/folders/${e}`)}}};

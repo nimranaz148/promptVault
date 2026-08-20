@@ -24,7 +24,7 @@ export interface PaginatedResult<T> {
 export async function listCards(filters: ListCardsFilters): Promise<PaginatedResult<PromptCard>> {
   const { ownerId, publicOnly, type, category, tag, search, page, limit, folderId } = filters;
 
-  let query = supabaseAdmin.from('prompt_cards').select('*', { count: 'exact' });
+  let query = supabaseAdmin.from('prompt_cards').select('*, owner:profiles(username, avatar_url)', { count: 'exact' });
 
   if (ownerId) query = query.eq('owner_id', ownerId);
   if (publicOnly) query = query.eq('is_public', true);
@@ -52,7 +52,7 @@ export async function listCards(filters: ListCardsFilters): Promise<PaginatedRes
 export async function findCardById(id: string): Promise<PromptCard | null> {
   const { data, error } = await supabaseAdmin
     .from('prompt_cards')
-    .select('*')
+    .select('*, owner:profiles(username, avatar_url)')
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
@@ -87,9 +87,16 @@ export async function updateCard(
 }
 
 export async function deleteCard(id: string): Promise<void> {
-  // Delete referencing runs first to prevent foreign key violation
+  // Delete referencing runs and likes first to prevent foreign key violation
   const { error: runError } = await supabaseAdmin.from('card_runs').delete().eq('card_id', id);
   if (runError) throw runError;
+
+  const { error: likeError } = await supabaseAdmin.from('card_likes').delete().eq('card_id', id);
+  if (likeError) throw likeError;
+
+  // If other cards forked this one, set their forked_from to null to avoid FK violation
+  const { error: forkError } = await supabaseAdmin.from('prompt_cards').update({ forked_from: null }).eq('forked_from', id);
+  if (forkError) throw forkError;
 
   const { error } = await supabaseAdmin.from('prompt_cards').delete().eq('id', id);
   if (error) throw error;

@@ -1,9 +1,21 @@
 import { AppError } from '../utils/AppError';
 import { listCards, findCardById, createCard, likePublicCard, unlikePublicCard, ListCardsFilters } from '../models/card.model';
+import { findProfileByUsername } from '../models/profile.model';
 import { PromptCard } from '../types';
 
-export async function getCommunityFeed(filters: Omit<ListCardsFilters, 'ownerId' | 'publicOnly'>) {
-  return listCards({ ...filters, publicOnly: true });
+export async function getCommunityFeed(filters: Omit<ListCardsFilters, 'ownerId' | 'publicOnly'> & { username?: string }) {
+  const { username, ...rest } = filters;
+  let ownerId: string | undefined = undefined;
+  
+  if (username) {
+    const profile = await findProfileByUsername(username);
+    if (!profile) {
+      return { data: [], page: rest.page, limit: rest.limit, total: 0 };
+    }
+    ownerId = profile.id;
+  }
+
+  return listCards({ ...rest, ownerId, publicOnly: true });
 }
 
 export async function getPublicCard(id: string): Promise<PromptCard> {

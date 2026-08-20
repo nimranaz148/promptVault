@@ -24,13 +24,16 @@ export interface PromptCardProps {
   onCopy?: () => void;
   onDelete?: () => void;
   onDuplicate?: () => void;
+  creatorUsername?: string;
+  creatorAvatarUrl?: string | null;
 }
 
 import { toast } from "sonner";
 
 export function PromptCard({
   type, title, preview, tags, likes, runs, imageUrl,
-  isRunInApp, cardId, onCopy, onDelete, onDuplicate
+  isRunInApp, cardId, onCopy, onDelete, onDuplicate,
+  creatorUsername, creatorAvatarUrl
 }: PromptCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -143,6 +146,15 @@ export function PromptCard({
           <h3 className="font-display font-semibold text-lg line-clamp-1 text-foreground">{title}</h3>
           <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">{preview}</p>
         </div>
+        
+        {creatorUsername && (
+          <div className="flex items-center gap-2 mt-1">
+            <div className="w-5 h-5 rounded-full overflow-hidden bg-muted">
+              <img src={creatorAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${creatorUsername}`} alt={creatorUsername} />
+            </div>
+            <span className="text-xs text-muted-foreground font-medium">@{creatorUsername}</span>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2 mt-auto pt-2">
           {tags.map(tag => (

@@ -8,6 +8,9 @@ import apiRoutes from './routes';
 
 export function createApp(): Application {
   const app = express();
+  
+  // Trust proxy is required for express-rate-limit when hosted on Vercel/Render
+  app.set('trust proxy', 1);
 
   // Security baseline (PRD Section 9 / 11 — NFRs)
   app.use(helmet());

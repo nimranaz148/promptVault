@@ -1,14 +1,21 @@
-﻿import { Request, Response, NextFunction } from 'express';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { Request, Response, NextFunction } from 'express';
 import { env } from '../config/env';
 import { AppError } from '../utils/AppError';
 import { AuthUser } from '../types';
 import { getProfileRole } from '../models/profile.model';
 
-// Cache JWKS - fetched once, reused for every request (fast local verification)
-const JWKS = createRemoteJWKSet(
-  new URL(`${env.supabaseUrl}/auth/v1/.well-known/jwks.json`)
-);
+// Bypass TypeScript converting import() to require() for ESM packages
+const importJose = new Function("return import('jose')");
+
+// Cache JWKS - fetched once, reused for every request
+let JWKS: any;
+async function getJWKS() {
+  if (!JWKS) {
+    const { createRemoteJWKSet } = await importJose();
+    JWKS = createRemoteJWKSet(new URL(`${env.supabaseUrl}/auth/v1/.well-known/jwks.json`));
+  }
+  return JWKS;
+}
 
 /**
  * Verifies the Supabase-issued JWT locally using JWKS public keys.
@@ -25,13 +32,17 @@ export async function requireAuth(req: Request, _res: Response, next: NextFuncti
 
     let payload: { sub?: string; email?: string };
     try {
-      const result = await jwtVerify(token, JWKS, {
+      const { jwtVerify } = await importJose();
+      const jwks = await getJWKS();
+      
+      const result = await jwtVerify(token, jwks, {
         issuer: `${env.supabaseUrl}/auth/v1`,
         audience: 'authenticated',
       });
       payload = result.payload as { sub?: string; email?: string };
     } catch {
       try {
+        const { jwtVerify } = await importJose();
         const secret = new TextEncoder().encode(env.supabaseJwtSecret);
         const result = await jwtVerify(token, secret, {
           issuer: `${env.supabaseUrl}/auth/v1`,

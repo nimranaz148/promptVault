@@ -16,7 +16,9 @@ export function createApp(): Application {
   app.use(helmet());
   app.use(
     cors({
-      origin: env.corsAllowedOrigins,
+      origin: (origin, callback) => {
+        callback(null, true); // Allow all origins dynamically
+      },
       credentials: true,
     })
   );

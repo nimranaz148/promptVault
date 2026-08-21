@@ -70,8 +70,14 @@ Known backend follow-ups:
 
 - Implementing Owner Joined Profiles on Cards (fetching profile info with cards) [COMPLETED]
 - Live AI-provider tests remain manual because automated tests mock provider boundaries.
-- Operational deployment still needs production env vars, VPS setup, PM2/Nginx/Certbot, and Vercel configuration.
+- Operational deployment [COMPLETED] - Both frontend and backend successfully deployed as Serverless functions on Vercel, bypassing the original Render plan due to billing restrictions.
 
+## Deployment Status
+
+Status: Live on Vercel
+
+- **Backend API**: Deployed to Vercel as a Serverless function using `@vercel/node`. Configured dynamic ESM imports for `jose` library to fix build issues, adjusted Express rate-limiting proxy trust, and configured dynamic CORS origin to support Vercel preview environments.
+- **Frontend Web**: Deployed to Vercel as a Next.js project. Environment variables securely integrated with Supabase and the live Backend API.
 ## Mobile App Status
 
 Status: Pending. Expo mobile app is not scaffolded yet.

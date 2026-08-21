@@ -115,33 +115,11 @@ This structure is what makes the codebase testable and lets the agent (or a futu
 ### 3.4 DevOps
 - Repo layout: `apps/web`, `apps/mobile`, `apps/api`, `packages/shared` (Turborepo optional — can stay as simple npm workspaces for solo dev)
 - Supabase project (hosted) — no local DB container needed, Supabase gives hosted Postgres + Auth + Storage out of the box
-- GitHub Actions CI (lint, typecheck on PR) — optional for MVP, add once core flows work
+- GitHub Actions CI (lint, typecheck)
 - **Deploy:**
   - **Web (Next.js)** → Vercel
-  - **Backend API (Node.js)** → **Hostinger KVM 2 VPS** (already owned — see Section 3.4.1 for setup)
+  - **Backend API (Node.js)** → Vercel (Serverless Functions via `@vercel/node`)
   - **Mobile** → EAS Build
-
-#### 3.4.1 Backend Deployment — Hostinger KVM 2 VPS
-
-The API deploys to the owner's existing Hostinger KVM 2 VPS instead of a managed platform like Railway/Render. Since this is a full VPS (root access, dedicated resources), the agent must set up the following stack manually:
-
-| Tool | Purpose |
-|---|---|
-| **Node.js + npm/pnpm** | Install directly on the VPS (via nvm recommended, for easy version switching) |
-| **PM2** | Keeps the Node/Express API running in the background, auto-restarts on crash, restarts on server reboot (`pm2 startup`) |
-| **Nginx** | Reverse proxy — routes `api.yourdomain.com` (port 80/443) to the Node app's internal port (e.g. `localhost:5000`) |
-| **Certbot (Let's Encrypt)** | Free SSL certificate for HTTPS on the API subdomain |
-| **Git** | Pull latest code from GitHub on the VPS for each deploy (manual `git pull` + `pm2 restart`, or a simple deploy script — no CI/CD platform needed for MVP) |
-| **UFW (firewall)** | Only allow ports 22 (SSH), 80, 443 — block direct access to the Node app's internal port from outside |
-
-**Basic setup order:**
-1. SSH into the VPS, install Node.js (via nvm) and PM2 globally
-2. Clone the repo, `cd apps/api`, install dependencies, set up `.env` (Section 11 vars) directly on the server — never commit `.env` to Git
-3. Start the API with PM2: `pm2 start dist/server.js --name promptvault-api`, then `pm2 save` + `pm2 startup` so it survives reboots
-4. Configure Nginx as a reverse proxy for a subdomain (e.g. `api.yourdomain.com` → `localhost:5000`)
-5. Point the Hostinger domain's DNS `A` record for the `api` subdomain to the VPS's IP address
-6. Run Certbot to issue a free SSL cert for `api.yourdomain.com` — enables `https://` for the frontend to call safely
-7. Redeploy flow for future changes: `git pull` → `npm run build` → `pm2 restart promptvault-api`
 
 **Why this matters for CORS/env setup:** once the API lives at `https://api.yourdomain.com`, update `NEXT_PUBLIC_API_URL` (web) and `EXPO_PUBLIC_API_URL` (mobile) to point there, and add the Vercel web app's domain to the API's CORS allow-list (Section 9).
 
